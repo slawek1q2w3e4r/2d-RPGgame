@@ -6,7 +6,9 @@ from menu import Menu
 from gui import GUI
 from map import TileMap
 from src.item_db import ItemDatabase
+from game_manager import gameManager
 from src.sfx import Sounds
+import random
 
 class Game:
     def __init__(self):
@@ -15,27 +17,29 @@ class Game:
         self.window = py.display.set_mode((0, 0), py.FULLSCREEN)
         py.display.set_caption("RPG")
         self.running = True
-        self.menu = Menu()
-        self.gui = GUI()
         self.sfx = Sounds()
-        self.item_db = ItemDatabase()  # Baza itemów (tekstury ładują się przy pobieraniu)
+        self.game_manager = gameManager()
+        self.item_db = ItemDatabase()
 
         self.tilemap = TileMap([
             "img/tiles/grass.png"
         ], self.window.get_width(), self.window.get_height())
 
         self.player = Player("img/player1.png",  400, 300, 100)
+        self.gui = GUI(self.player)
         self.inventory = Inventory(self.player)
 
-        # Usuń domyślne equipowanie przedmiotu w __init__
-        # jeśli chcesz wyposażyć item, zrób to w metodzie Start lub po kliknięciu w slot
-
         self.gui.set_health(self.player.hp)
+        self.menu = Menu(self.gui, self.inventory, self.player, self.item_db)
 
-        self.enemies = [
-            Enemy("img/enemy1.png", 100, 100),
-            Enemy("img/enemy1.png", 300, 200)
-        ]
+        self.screen_width, self.screen_height = py.display.get_surface().get_size()
+        self.enemy_count = random.randint(8, 15)
+        self.enemies = []
+        for _ in range(self.enemy_count):
+            x = random.randint(0, self.screen_width)
+            y = random.randint(0, self.screen_height)
+            enemy = Enemy("img/enemy1.png", x, y)
+            self.enemies.append(enemy)
 
     def Draw(self):
         self.tilemap.draw(self.window)
@@ -67,7 +71,10 @@ class Game:
             self.inventory.handle_event(event)
 
     def Start(self):
+        self.inventory.add_item(self.item_db.get_item_by_id(0))
+        self.inventory.add_item(self.item_db.get_item_by_id(3))
         self.inventory.add_item(self.item_db.get_item_by_id(1))
+        self.player.take_damage(20)
         self.sfx.Play_background()
 
     def Run(self):

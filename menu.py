@@ -28,12 +28,15 @@ class Button:
 
 
 class Menu:
-    def __init__(self):
+    def __init__(self, gui, inventory, player, item_db):
         self.active = False
         self.state = "main"  # może być 'main' albo 'settings'
         self.buttons = []
-
+        self.player = player
         self.create_main_buttons()
+        self.item_database = item_db
+        self.gui = gui
+        self.inventory = inventory
 
     def create_main_buttons(self):
         self.buttons = []
@@ -48,13 +51,18 @@ class Menu:
         def exit_game():
             py.event.post(py.event.Event(py.QUIT))
 
+        def open_shop():
+            self.state = "shop"
+            self.create_shop_buttons()
+
         def close_menu():
             self.toggle()
 
         self.buttons = [
             Button("Ustawienia", 20, start_y + 0 * (button_height + spacing), 160, button_height, open_settings),
-            Button("Wyjście",    20, start_y + 1 * (button_height + spacing), 160, button_height, exit_game),
-            Button("Powrót",     20, start_y + 2 * (button_height + spacing), 160, button_height, close_menu)
+            Button("Sklep",      20, start_y + 1 * (button_height + spacing), 160, button_height, open_shop),
+            Button("Powrót",     20, start_y + 2 * (button_height + spacing), 160, button_height, close_menu),
+            Button("Wyjście",    20, start_y + 3 * (button_height + spacing), 160, button_height, exit_game)
         ]
 
     def create_settings_buttons(self):
@@ -74,6 +82,56 @@ class Menu:
             Button("Opcja 1",  20, start_y + 0 * (button_height + spacing), 160, button_height, dummy_setting),
             Button("Opcja 2",  20, start_y + 1 * (button_height + spacing), 160, button_height, dummy_setting),
             Button("Powrót",   20, start_y + 2 * (button_height + spacing), 160, button_height, back_to_main)
+        ]
+
+    def create_shop_buttons(self):
+        self.buttons = []
+        start_y = 20
+        button_height = 40
+        spacing = 10
+
+        def back_to_main():
+            self.state = "main"
+            self.create_main_buttons()
+
+        def buy_items():
+            self.buttons = []
+
+            start_y_items = 20
+            for index, item in enumerate(self.item_database.items):
+                def make_callback(item=item):  # potrzebne żeby zachować kontekst
+                    def buy():
+                        if self.gui.coins >= item.price:
+                            self.gui.coins -= item.price
+                            self.gui.add_message(f"Kupiono: {item.name}")
+                            if not self.inventory.add_item(item):
+                                self.gui.add_message("Brak miejsca w ekwipunku!")
+
+                        else:
+                            self.gui.add_message("Za mało monet!")
+
+                    return buy
+
+                self.buttons.append(
+                    Button(
+                        f"{item.name} ({item.price} M)",
+                        200,
+                        start_y_items + index * (button_height + spacing),
+                        250,
+                        button_height,
+                        make_callback()
+                    )
+                )
+
+            self.buttons.append(Button("Powrót", 20, start_y_items, 160, button_height, back_to_main))
+
+        def sell_items():
+            print("sell items")
+
+        self.buttons = [
+            Button("Kup", 20, start_y + 0 * (button_height + spacing), 160, button_height, buy_items),
+            Button("Sprzedaj", 20, start_y + 1 * (button_height + spacing), 160, button_height, sell_items),
+            Button("Powrót", 20, start_y + 2 * (button_height + spacing), 160, button_height, back_to_main)
         ]
 
     def toggle(self):

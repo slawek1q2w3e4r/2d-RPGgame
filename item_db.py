@@ -5,12 +5,14 @@ class Item:
         self,
         id: int,
         name: str,
+        rarity: str,
         description: str,
         texture_path: str = None,
         dmg: int = 0,
         heal: int = 0,
         feed: int = 0,
         anim_folder_path: str = None,
+        price: int = 0,
     ):
         self.id = id
         self.name = name
@@ -21,6 +23,7 @@ class Item:
         self.feed = feed
         self.anim_folder_path = anim_folder_path
         self.texture = None  # zostanie załadowane później
+        self.price = price
 
     def load_texture(self):
         """
@@ -39,26 +42,169 @@ class ItemDatabase:
         # Przykładowe przedmioty tworzymy dopiero tutaj
         self.items = [
             Item(
-                id=1,
-                name="Iron Sword",
-                description="Sharp iron blade",
-                texture_path="img/sword_eq_1.png",
-                dmg=10,
-                heal=0,
-                feed=0,
-                anim_folder_path="img/animations/sword/",
+                0,
+                "Iron Sword",
+                "Uncommon",
+                "Sharp iron blade",
+                "img/sword_eq_1.png",
+                10,
+                0,
+                0,
+                "img/animations/sword/",
+                10,
             ),
             Item(
-                id=2,
-                name="Healing Potion",
-                description="Restores health",
-                texture_path="img/potion_heal.png",
-                dmg=0,
-                heal=20,
-                feed=5,
-                anim_folder_path=None,
+                1,
+                "Healing Potion",
+                "rare",
+                "Restores health",
+                None,
+                0,
+                20,
+                5,
+                None,
+                10,
             ),
-            # ... kolejne przedmioty
+            Item(
+                2,
+                "bread",
+                "common",
+                "dry but nutritious bread",
+                None,
+                0,
+                5,
+                20,
+                None,
+                2,
+            ),
+            Item(
+                3,
+                "Golem Sword",
+                "Legendary",
+                "Very Sharp Sword from Golems",
+                "img/sword_eq_1.png",
+                30,
+                0,
+                0,
+                "img/animations/sword/",
+                100,
+            ),
+            Item(
+                4,
+                "Flame Dagger",
+                "Epic",
+                "A dagger imbued with eternal flame.",
+                None,
+                20,  # dmg
+                0,  # heal
+                0,  # feed
+                None,
+                80,
+            ),
+
+            Item(
+                5,
+                "Guardian Shield",
+                "Rare",
+                "A sturdy shield made by mountain guardians.",
+                None,
+                0,
+                0,
+                0,
+                None,
+                50,
+            ),
+
+            Item(
+                6,
+                "Healing Staff",
+                "Uncommon",
+                "A staff that heals its wielder.",
+                None,
+                5,
+                20,
+                0,
+                None,
+                40,
+            ),
+
+            Item(
+                7,
+                "Thunder Axe",
+                "Legendary",
+                "An axe crackling with the power of storms.",
+                None,
+                35,
+                0,
+                0,
+                None,
+                150,
+            ),
+
+            Item(
+                8,
+                "Shadow Cloak",
+                "Epic",
+                "Makes the wearer harder to hit. (20% chance to hti)",
+                None,
+                0,
+                0,
+                0,
+                None,
+                200,
+            ),
+
+            Item(
+                9,
+                "Vampire Fang",
+                "Rare",
+                "Steals a bit of enemy life on hit.",
+                None,
+                15,
+                5,
+                0,
+                None,
+                150,
+            ),
+
+            Item(
+                10,
+                "Frozen Lance",
+                "Epic",
+                "A weapon forged in the coldest peaks.",
+                None,
+                25,
+                0,
+                0,
+                None,
+                100,
+            ),
+
+            Item(
+                11,
+                "Crystal Helm",
+                "Uncommon",
+                "A helm made of pure enchanted crystal.",
+                None,
+                0,
+                0,
+                0,
+                None,
+                150,
+            ),
+
+            Item(
+                12,
+                "Phoenix Feather",
+                "Legendary",
+                "Revives the user once after death.",
+                None,
+                0,
+                50,
+                0,
+                None,
+                300,
+            ),
         ]
 
     def get_item_by_id(self, item_id: int) -> Item:

@@ -65,25 +65,25 @@ class Player:
         self.image = self.original_image if self.facing_right else py.transform.flip(self.original_image, True, False)
 
     def Draw(self, surface):
-        # Rysuj gracza
-        surface.blit(self.image, (self.x, self.y))
+        if self.hp > 0:
+            surface.blit(self.image, (self.x, self.y))
 
-        # Jeżeli mamy wyposażony przedmiot, rysujemy animację ataku
-        if self.equipped_item and self.sword_anim:
-            direction = "right" if self.facing_right else "left"
-            offset_x, offset_y = self.offsets[direction]
-            sword_pos = (self.x + offset_x, self.y + offset_y)
+            # Jeżeli mamy wyposażony przedmiot, rysujemy animację ataku
+            if self.equipped_item and self.sword_anim:
+                direction = "right" if self.facing_right else "left"
+                offset_x, offset_y = self.offsets[direction]
+                sword_pos = (self.x + offset_x, self.y + offset_y)
 
-            if self.sword_anim.playing:
-                # rysuj kolejną klatkę animacji
-                self.sword_anim.draw(surface, sword_pos, flip=not self.facing_right)
-            else:
-                # pokaż statyczną pierwszą klatkę
-                frame = self.sword_anim.frames[0]
-                if not self.facing_right:
-                    frame = py.transform.flip(frame, True, False)
-                rect = frame.get_rect(center=sword_pos)
-                surface.blit(frame, rect)
+                if self.sword_anim.playing:
+                    # rysuj kolejną klatkę animacji
+                    self.sword_anim.draw(surface, sword_pos, flip=not self.facing_right)
+                else:
+                    # pokaż statyczną pierwszą klatkę
+                    frame = self.sword_anim.frames[0]
+                    if not self.facing_right:
+                        frame = py.transform.flip(frame, True, False)
+                    rect = frame.get_rect(center=sword_pos)
+                    surface.blit(frame, rect)
 
     def Update(self, enemies, gui):
         self.Move()
@@ -122,6 +122,10 @@ class Player:
                         if gui:
                             gui.add_coins(5)
                             gui.add_message("Zabiłeś przeciwnika! +5 monet")
+
+    def take_damage(self, amount):
+        self.hp -= amount
+        self.hp = max(0, self.hp)
 
     def get_hp(self):
         return self.hp

@@ -1,15 +1,15 @@
 import pygame as py
 
 class GUI:
-    def __init__(self):
+    def __init__(self, player):  # ← przekazujemy obiekt gracza
         self.font = py.font.SysFont("arial", 24)
-        self.health = 100  # zdrowie gracza
+        self.player = player
         self.max_health = 100
-        self.coins = 0     # ilość monet
-        self.messages = []  # lista komunikatów (np. "Znalazłeś skrzynię!")
+        self.coins = 0
+        self.messages = []
 
-    def set_health(self, amount):
-        self.health = max(0, min(self.max_health, amount))
+    def set_health(self, amount):  # opcjonalne — już niepotrzebne
+        self.player.hp = max(0, min(self.max_health, amount))
 
     def add_coins(self, amount):
         self.coins += amount
@@ -23,7 +23,8 @@ class GUI:
         })
 
     def draw_health_bar(self, surface, x, y, width=200, height=20):
-        health_ratio = self.health / self.max_health
+        current_health = self.player.hp
+        health_ratio = current_health / self.max_health
         py.draw.rect(surface, (60, 60, 60), (x, y, width, height))
         py.draw.rect(surface, (255, 0, 0), (x, y, width * health_ratio, height))
         py.draw.rect(surface, (255, 255, 255), (x, y, width, height), 2)
